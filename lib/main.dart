@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 void main() {
   runApp(Calculator());
@@ -12,7 +13,7 @@ class Calculator extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Crap Calculator',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData.dark(),
       home: SimpleCalculator(),
     );
   }
@@ -26,6 +27,58 @@ class SimpleCalculator extends StatefulWidget {
 }
 
 class _SimpleCalculatorState extends State<SimpleCalculator> {
+  String equation = "0";
+  String result = "";
+  String expression = "";
+  double equationFontSize = 38;
+  double resultFontSize = 48;
+
+  buttonPressed(String buttonText) {
+    setState(
+      () {
+        if (buttonText == "C") {
+          equation = "0";
+          result = "";
+          equationFontSize = 38;
+          resultFontSize = 48;
+        } else if (buttonText == "<<") {
+          equationFontSize = 48;
+          resultFontSize = 38;
+          equation = equation.substring(0, equation.length - 1);
+          if (equation == "") {
+            equationFontSize = 38;
+            resultFontSize = 48;
+            equation = "0";
+          }
+        } else if (buttonText == "=") {
+          equationFontSize = 38;
+          resultFontSize = 48;
+          expression = equation;
+          expression = expression.replaceAll("×", "*");
+          expression = expression.replaceAll("÷", "/");
+          try {
+            Parser p = Parser();
+            Expression exp = p.parse(expression);
+            ContextModel cm = ContextModel();
+            result = "${exp.evaluate(EvaluationType.REAL, cm)}";
+          } catch (e) {
+            result = "Error";
+          }
+        } else {
+          equationFontSize = 48;
+          resultFontSize = 38;
+          if (equation == "0") {
+            equation = buttonText;
+          } else if (equation == "00") {
+            equation = buttonText;
+          } else {
+            equation = equation + buttonText;
+          }
+        }
+      },
+    );
+  }
+
   Widget buildButton(
       String buttonText, double buttonHeight, Color buttonColor) {
     return Container(
@@ -35,12 +88,12 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
         style: TextButton.styleFrom(
           padding: EdgeInsets.all(16.0),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(0.0),
+            borderRadius: BorderRadius.circular(3),
             side: BorderSide(
-                color: Colors.white, width: 1, style: BorderStyle.solid),
+                color: Colors.black87, width: 0.3, style: BorderStyle.solid),
           ),
         ),
-        onPressed: null,
+        onPressed: () => buttonPressed(buttonText),
         child: Text(
           buttonText,
           style: TextStyle(
@@ -64,16 +117,16 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
             alignment: Alignment.centerRight,
             padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
             child: Text(
-              "0",
-              style: TextStyle(fontSize: 38),
+              equation,
+              style: TextStyle(fontSize: equationFontSize),
             ),
           ),
           Container(
             alignment: Alignment.centerRight,
             padding: EdgeInsets.fromLTRB(10, 30, 10, 0),
             child: Text(
-              "0",
-              style: TextStyle(fontSize: 48),
+              result,
+              style: TextStyle(fontSize: resultFontSize),
             ),
           ),
           Expanded(
@@ -89,36 +142,36 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                     TableRow(
                       children: [
                         buildButton("C", 1, Colors.redAccent),
-                        buildButton("<<", 1, Colors.teal),
-                        buildButton("÷", 1, Colors.indigo),
+                        buildButton("<<", 1, Colors.blueGrey),
+                        buildButton("÷", 1, Colors.blueGrey),
                       ],
                     ),
                     TableRow(
                       children: [
-                        buildButton("7", 1, Colors.blueGrey),
-                        buildButton("8", 1, Colors.blueGrey),
-                        buildButton("9", 1, Colors.blueGrey),
+                        buildButton("7", 1, Colors.transparent),
+                        buildButton("8", 1, Colors.transparent),
+                        buildButton("9", 1, Colors.transparent),
                       ],
                     ),
                     TableRow(
                       children: [
-                        buildButton("4", 1, Colors.blueGrey),
-                        buildButton("5", 1, Colors.blueGrey),
-                        buildButton("6", 1, Colors.blueGrey),
+                        buildButton("4", 1, Colors.transparent),
+                        buildButton("5", 1, Colors.transparent),
+                        buildButton("6", 1, Colors.transparent),
                       ],
                     ),
                     TableRow(
                       children: [
-                        buildButton("1", 1, Colors.blueGrey),
-                        buildButton("2", 1, Colors.blueGrey),
-                        buildButton("3", 1, Colors.blueGrey),
+                        buildButton("1", 1, Colors.transparent),
+                        buildButton("2", 1, Colors.transparent),
+                        buildButton("3", 1, Colors.transparent),
                       ],
                     ),
                     TableRow(
                       children: [
-                        buildButton(".", 1, Colors.blueGrey),
-                        buildButton("0", 1, Colors.blueGrey),
-                        buildButton("00", 1, Colors.blueGrey),
+                        buildButton(".", 1, Colors.transparent),
+                        buildButton("0", 1, Colors.transparent),
+                        buildButton("00", 1, Colors.transparent),
                       ],
                     ),
                   ],
@@ -130,22 +183,22 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                   children: [
                     TableRow(
                       children: [
-                        buildButton("×", 1, Colors.indigo),
+                        buildButton("×", 1, Colors.blueGrey),
                       ],
                     ),
                     TableRow(
                       children: [
-                        buildButton("-", 1, Colors.indigo),
+                        buildButton("-", 1, Colors.blueGrey),
                       ],
                     ),
                     TableRow(
                       children: [
-                        buildButton("+", 1, Colors.indigo),
+                        buildButton("+", 1, Colors.blueGrey),
                       ],
                     ),
                     TableRow(
                       children: [
-                        buildButton("=", 2, Colors.pinkAccent),
+                        buildButton("=", 2, Colors.transparent),
                       ],
                     )
                   ],
